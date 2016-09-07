@@ -1,0 +1,57 @@
+#!/usr/bin/env node
+
+'use strict';
+var parser = require('minimist');
+var mout = require('mout');
+var dude = require('../lib');
+var cli = require('../lib/utils/cli');
+var ver = require('../package.json').version;
+
+var event;
+
+var raw_args = parser(process.argv.slice(2));
+var args = cli.read(raw_args);
+
+var command = args.commands.shift() || '';
+var argument = args.commands.join(' ') || undefined;
+
+if(!mout.object.has(dude.commands, command)){
+    if(command === "version"){
+        process.stdout.write(ver + '\n');
+        process.exit();
+    } else {
+        command = 'help';
+    }
+}
+
+var renderer = cli.renderer(command);
+switch(command){
+    case 'new':
+        event = dude.commands.new(argument);
+        break;
+    case 'install':
+        cli.install(argument, args.options);
+        break;
+    default:
+        if(argument){
+            event = dude.commands.help(argument);
+        } else {
+            event = dude.commands.help();
+        }
+}
+
+event.on('error', function(err){
+    renderer.error(err);
+    process.exit(1);
+}).on('log', function(data, level){
+  renderer.log(data);
+}).on('success', function(data){
+    renderer.success(data);
+});
+
+/**
+ * Debug info here
+ */
+//console.dir(args.commands);
+//console.dir(args.options);
+//console.dir(argument);

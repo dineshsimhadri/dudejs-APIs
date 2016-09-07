@@ -1,0 +1,15 @@
+{
+    "command": "install",
+    "description": "Create a new dudejs project inside the [app] directory",
+    "usage": ["install [module] [options]"],
+    "options": [
+        {
+            "flag": "-f",
+            "description": "Install a frontend module via bower"
+        },
+        {
+            "flag": "-b",
+            "description": "Install a backend module via npm"
+        }
+    ]
+}
